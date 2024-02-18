@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "drink_water_tracker"
+version = "0.1.0"
+description = ""
+authors = ["Carlos Chiarelli <ca.chiarelli.97@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.109.2"
+pydantic = "^2.6.1"
+uvicorn = "^0.27.1"
+sqlalchemy = "^2.0.27"
+psycopg2-binary = "^2.9.9"
+python-decouple = "^3.8"
+
+[tool.poetry.group.dev.dependencies]
+isort = "^5.13.2"
+black = "^24.2.0"
+flake8 = "^7.0.0"
+mypy = "^1.8.0"
+alembic = "^1.13.1"
+
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8.0.0"
+pytest-cov = "^4.1.0"
+httpx = "^0.26.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[[tool.mypy.overrides]]
+module = "drink_water_tracker"
+ignore_missing_imports = true
