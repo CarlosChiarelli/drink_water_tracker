@@ -33,7 +33,7 @@
 
 ## Database entity-relationship diagram
 
-![Alt Text](./img/db-entity-relationship.jpg)
+![Alt Text](./img/db-entity-relationship.png)
 
 ---
 
