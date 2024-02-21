@@ -2,7 +2,10 @@ import pytest
 from fastapi.exceptions import HTTPException
 
 from drink_water_tracker.db.models import WaterConsumption as WaterConsumptionModel
-from drink_water_tracker.schemas.water_consumption import WaterConsumption
+from drink_water_tracker.schemas.water_consumption import (
+    WaterConsumption,
+    WaterConsumptionOutput,
+)
 from drink_water_tracker.use_cases.water_consumption import WaterConsumptionUseCases
 
 
@@ -49,3 +52,25 @@ def test_add_water_consumption_invalid_cup_size(db_session, users_on_db, cup_siz
             user_id=users_on_db[0].id,
             cup_size_id=-1,
         )
+
+
+def test_list_water_consumption(db_session, water_consumption_on_db):
+    uc = WaterConsumptionUseCases(db_session=db_session)
+    water_consumption = uc.list_water_consumption()
+
+    for wtcmp in water_consumption_on_db:
+        db_session.refresh(wtcmp)
+
+    assert len(water_consumption) == 8
+    assert type(water_consumption[0]) is WaterConsumptionOutput
+    assert water_consumption[0].drink_date == water_consumption_on_db[0].drink_date
+    assert water_consumption[0].user.name == water_consumption_on_db[0].user.name
+    assert water_consumption[0].user.weight == water_consumption_on_db[0].user.weight
+    assert (
+        water_consumption[0].cup_size.description
+        == water_consumption_on_db[0].cup_size.description
+    )
+    assert (
+        water_consumption[0].cup_size.amount_ml
+        == water_consumption_on_db[0].cup_size.amount_ml
+    )

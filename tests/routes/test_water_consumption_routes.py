@@ -53,3 +53,25 @@ def test_add_water_consumption_route_invalid_cup_size(db_session, users_on_db):
     water_consumption_on_db = db_session.query(WaterConsumptionModel).all()
 
     assert len(water_consumption_on_db) == 0
+
+
+def test_list_water_consumption_route(water_consumption_on_db):
+    response = client.get("/water-consumption/list")
+
+    assert response.status_code == status.HTTP_200_OK
+
+    data = response.json()
+
+    assert len(data) == 8
+    assert data[0] == {
+        "id": water_consumption_on_db[0].id,
+        "drink_date": str(water_consumption_on_db[0].drink_date),
+        "user": {
+            "name": water_consumption_on_db[0].user.name,
+            "weight": water_consumption_on_db[0].user.weight,
+        },
+        "cup_size": {
+            "description": water_consumption_on_db[0].cup_size.description,
+            "amount_ml": water_consumption_on_db[0].cup_size.amount_ml,
+        },
+    }
