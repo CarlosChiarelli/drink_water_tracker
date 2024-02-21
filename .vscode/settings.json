@@ -60,7 +60,7 @@
     "prettier.singleQuote": true,
     "prettier.arrowParens": "avoid",
     "prettier.useTabs": true,
-    "python.testing.unittestEnabled": true,
+    "python.testing.unittestEnabled": false,
     "[python]": {
         "editor.formatOnSave": true,
         "editor.formatOnType": true,
@@ -103,4 +103,8 @@
         "titleBar.inactiveBackground": "#1857a499",
         "titleBar.inactiveForeground": "#e7e7e799"
     },
+    "python.testing.pytestArgs": [
+        "."
+    ],
+    "python.testing.pytestEnabled": true,
 }
