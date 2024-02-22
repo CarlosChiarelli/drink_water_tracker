@@ -6,10 +6,10 @@ from drink_water_tracker.routes.water_consumption_routes import (
     router as water_consumption_routes,
 )
 
-app = FastAPI()
+app = FastAPI(title="Drink water tracker")
 
 
-@app.get("/health-check")
+@app.get("/health-check", tags=["Health check"], description="Checks application health.")
 def health_check() -> bool:
     return True
 

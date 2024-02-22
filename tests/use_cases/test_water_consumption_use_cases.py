@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 
 import pytest
 from fastapi.exceptions import HTTPException
@@ -10,10 +10,13 @@ from drink_water_tracker.schemas.water_consumption import (
 )
 from drink_water_tracker.use_cases.water_consumption import WaterConsumptionUseCases
 
+yesterday = date.today() - timedelta(days=1)
+yesterday_str = yesterday.strftime("%Y-%m-%d")
+
 
 def test_add_water_consumption_uc(db_session, users_on_db, cup_sizes_on_db):
     uc = WaterConsumptionUseCases(db_session)
-    water_consumption = WaterConsumption(drink_date="2024-02-20")
+    water_consumption = WaterConsumption(drink_date=yesterday_str)
     uc.add_water_consumption(
         water_consumption=water_consumption,
         user_id=users_on_db[0].id,
@@ -34,7 +37,7 @@ def test_add_water_consumption_uc(db_session, users_on_db, cup_sizes_on_db):
 
 def test_add_water_consumption_invalid_user(db_session, users_on_db, cup_sizes_on_db):
     uc = WaterConsumptionUseCases(db_session)
-    water_consumption = WaterConsumption(drink_date="2024-02-20")
+    water_consumption = WaterConsumption(drink_date=yesterday_str)
 
     with pytest.raises(HTTPException):
         uc.add_water_consumption(
@@ -46,7 +49,7 @@ def test_add_water_consumption_invalid_user(db_session, users_on_db, cup_sizes_o
 
 def test_add_water_consumption_invalid_cup_size(db_session, users_on_db, cup_sizes_on_db):
     uc = WaterConsumptionUseCases(db_session)
-    water_consumption = WaterConsumption(drink_date="2024-02-20")
+    water_consumption = WaterConsumption(drink_date=yesterday_str)
 
     with pytest.raises(HTTPException):
         uc.add_water_consumption(
@@ -83,7 +86,7 @@ def test_filter_water_consumption_by_username_and_date(
 ):
     uc = WaterConsumptionUseCases(db_session=db_session)
     water_consumption = uc.list_water_consumption(
-        user_name="Carlos", drink_date="2024-02-20"
+        user_name="Carlos", drink_date=yesterday_str
     )
 
     for wtcmp_on_db in water_consumption_on_db:
@@ -92,7 +95,7 @@ def test_filter_water_consumption_by_username_and_date(
     assert len(water_consumption) == 4
     assert type(water_consumption[0]) is WaterConsumptionOutput
     assert all(item.user.name == "Carlos" for item in water_consumption)
-    assert all(item.drink_date == date(2024, 2, 20) for item in water_consumption)
+    assert all(item.drink_date == yesterday for item in water_consumption)
 
 
 def test_filter_water_consumption_by_username(db_session, water_consumption_on_db):

@@ -1,3 +1,5 @@
+from datetime import date, timedelta
+
 import pytest
 
 from drink_water_tracker.db.connection import Session
@@ -64,6 +66,8 @@ def cup_sizes_on_db(db_session):
 # maybe remove
 @pytest.fixture()
 def water_consumption_on_db(db_session, users_on_db, cup_sizes_on_db):
+    today = date.today().strftime("%Y-%m-%d")
+    yesterday = (date.today() - timedelta(days=1)).strftime("%Y-%m-%d")
     carlos = users_on_db[0]
     maria = users_on_db[1]
     small_cup = cup_sizes_on_db[0]
@@ -72,42 +76,42 @@ def water_consumption_on_db(db_session, users_on_db, cup_sizes_on_db):
 
     water_consumption = [
         WaterConsumptionModel(
-            drink_date="2024-02-20",
+            drink_date=yesterday,
             user_id=carlos.id,
             cup_size_id=large_bottle.id,
         ),
         WaterConsumptionModel(
-            drink_date="2024-02-20",
+            drink_date=yesterday,
             user_id=carlos.id,
             cup_size_id=large_bottle.id,
         ),
         WaterConsumptionModel(
-            drink_date="2024-02-20",
+            drink_date=yesterday,
             user_id=carlos.id,
             cup_size_id=large_bottle.id,
         ),
         WaterConsumptionModel(
-            drink_date="2024-02-20",
+            drink_date=yesterday,
             user_id=carlos.id,
             cup_size_id=large_bottle.id,
         ),
         WaterConsumptionModel(
-            drink_date="2024-02-20",
+            drink_date=yesterday,
             user_id=maria.id,
             cup_size_id=small_cup.id,
         ),
         WaterConsumptionModel(
-            drink_date="2024-02-21",
+            drink_date=today,
             user_id=carlos.id,
             cup_size_id=medium_cup.id,
         ),
         WaterConsumptionModel(
-            drink_date="2024-02-21",
+            drink_date=today,
             user_id=maria.id,
             cup_size_id=small_cup.id,
         ),
         WaterConsumptionModel(
-            drink_date="2024-02-21",
+            drink_date=today,
             user_id=maria.id,
             cup_size_id=medium_cup.id,
         ),
