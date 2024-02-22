@@ -10,6 +10,8 @@ from drink_water_tracker.schemas.water_consumption import (
 )
 from drink_water_tracker.use_cases.water_consumption import WaterConsumptionUseCases
 
+today = date.today()
+today_str = today.strftime("%Y-%m-%d")
 yesterday = date.today() - timedelta(days=1)
 yesterday_str = yesterday.strftime("%Y-%m-%d")
 
@@ -35,7 +37,7 @@ def test_add_water_consumption_uc(db_session, users_on_db, cup_sizes_on_db):
     db_session.commit()
 
 
-def test_add_water_consumption_invalid_user(db_session, users_on_db, cup_sizes_on_db):
+def test_add_water_consumption_invalid_user_uc(db_session, users_on_db, cup_sizes_on_db):
     uc = WaterConsumptionUseCases(db_session)
     water_consumption = WaterConsumption(drink_date=yesterday_str)
 
@@ -47,7 +49,9 @@ def test_add_water_consumption_invalid_user(db_session, users_on_db, cup_sizes_o
         )
 
 
-def test_add_water_consumption_invalid_cup_size(db_session, users_on_db, cup_sizes_on_db):
+def test_add_water_consumption_invalid_cup_size_uc(
+    db_session, users_on_db, cup_sizes_on_db
+):
     uc = WaterConsumptionUseCases(db_session)
     water_consumption = WaterConsumption(drink_date=yesterday_str)
 
@@ -59,52 +63,52 @@ def test_add_water_consumption_invalid_cup_size(db_session, users_on_db, cup_siz
         )
 
 
-def test_list_water_consumption(db_session, water_consumption_on_db):
-    uc = WaterConsumptionUseCases(db_session=db_session)
-    water_consumption = uc.list_water_consumption()
-
-    for wtcmp in water_consumption_on_db:
-        db_session.refresh(wtcmp)
-
-    assert len(water_consumption) == 8
-    assert type(water_consumption[0]) is WaterConsumptionOutput
-    assert water_consumption[0].drink_date == water_consumption_on_db[0].drink_date
-    assert water_consumption[0].user.name == water_consumption_on_db[0].user.name
-    assert water_consumption[0].user.weight == water_consumption_on_db[0].user.weight
-    assert (
-        water_consumption[0].cup_size.description
-        == water_consumption_on_db[0].cup_size.description
-    )
-    assert (
-        water_consumption[0].cup_size.amount_ml
-        == water_consumption_on_db[0].cup_size.amount_ml
-    )
-
-
-def test_filter_water_consumption_by_username_and_date(
-    db_session, water_consumption_on_db
+def test_list_water_consumption_by_username_uc(
+    db_session, water_consumption_multiple_users_on_db
 ):
-    uc = WaterConsumptionUseCases(db_session=db_session)
-    water_consumption = uc.list_water_consumption(
-        user_name="Carlos", drink_date=yesterday_str
-    )
-
-    for wtcmp_on_db in water_consumption_on_db:
-        db_session.refresh(wtcmp_on_db)
-
-    assert len(water_consumption) == 4
-    assert type(water_consumption[0]) is WaterConsumptionOutput
-    assert all(item.user.name == "Carlos" for item in water_consumption)
-    assert all(item.drink_date == yesterday for item in water_consumption)
-
-
-def test_filter_water_consumption_by_username(db_session, water_consumption_on_db):
     uc = WaterConsumptionUseCases(db_session=db_session)
     water_consumption = uc.list_water_consumption(user_name="Carlos")
 
-    for wtcmp_on_db in water_consumption_on_db:
-        db_session.refresh(wtcmp_on_db)
+    for wc in water_consumption_multiple_users_on_db:
+        db_session.refresh(wc)
 
-    assert len(water_consumption) == 5
+    assert len(water_consumption) == 2
     assert type(water_consumption[0]) is WaterConsumptionOutput
-    assert all(item.user.name == "Carlos" for item in water_consumption)
+    assert type(water_consumption[1]) is WaterConsumptionOutput
+
+    assert water_consumption[0].consumption_date == yesterday
+    assert water_consumption[0].day_goal_ml == 2450
+    assert water_consumption[0].remaining_goal_ml == 0
+    assert water_consumption[0].consumed_goal_ml == 2450
+    assert water_consumption[0].consumed_goal_percentage == 100
+    assert water_consumption[0].total_consumption_ml == 3000
+    assert water_consumption[0].goal_reached is True
+
+    assert water_consumption[1].consumption_date == today
+    assert water_consumption[1].day_goal_ml == 2450
+    assert water_consumption[1].remaining_goal_ml == 2100
+    assert water_consumption[1].consumed_goal_ml == 350
+    assert water_consumption[1].consumed_goal_percentage == 14.3
+    assert water_consumption[1].total_consumption_ml == 350
+    assert water_consumption[1].goal_reached is False
+
+
+def test_list_water_consumption_by_username_and_date_uc(
+    db_session, water_consumption_multiple_users_on_db
+):
+    uc = WaterConsumptionUseCases(db_session=db_session)
+    water_consumption = uc.list_water_consumption(user_name="Maria", drink_date=yesterday)
+
+    for wc in water_consumption_multiple_users_on_db:
+        db_session.refresh(wc)
+
+    assert len(water_consumption) == 1
+    assert type(water_consumption[0]) is WaterConsumptionOutput
+
+    assert water_consumption[0].consumption_date == yesterday
+    assert water_consumption[0].day_goal_ml == 1925
+    assert water_consumption[0].remaining_goal_ml == 1675
+    assert water_consumption[0].consumed_goal_ml == 250
+    assert water_consumption[0].consumed_goal_percentage == 13
+    assert water_consumption[0].total_consumption_ml == 250
+    assert water_consumption[0].goal_reached is False

@@ -3,8 +3,6 @@ from datetime import date, timedelta
 import pytest
 from pydantic import ValidationError
 
-from drink_water_tracker.schemas.cup_size import CupSize
-from drink_water_tracker.schemas.user import User
 from drink_water_tracker.schemas.water_consumption import (
     WaterConsumption,
     WaterConsumptionInput,
@@ -41,15 +39,22 @@ def test_water_consumption_input_schema():
 
 
 def test_water_consumption_output_schema():
-    user = User(name="Carlos", weight=70)
-    cup_size = CupSize(description="Copo pequeno 200mL", amount_ml=200)
     water_consumption_output = WaterConsumptionOutput(
-        id=1, drink_date=today_str, user=user, cup_size=cup_size
+        consumption_date=today_str,
+        day_goal_ml=2100,
+        remaining_goal_ml=2100,
+        consumed_goal_ml=0,
+        consumed_goal_percentage=0,
+        total_consumption_ml=0,
+        goal_reached=False,
     )
 
     assert water_consumption_output.dict() == {
-        "id": 1,
-        "drink_date": today,
-        "user": {"name": "Carlos", "weight": 70},
-        "cup_size": {"description": "Copo pequeno 200mL", "amount_ml": 200},
+        "consumption_date": today,
+        "day_goal_ml": 2100,
+        "remaining_goal_ml": 2100,
+        "consumed_goal_ml": 0,
+        "consumed_goal_percentage": 0,
+        "total_consumption_ml": 0,
+        "goal_reached": False,
     }

@@ -9,5 +9,5 @@ class CustomBaseModel(BaseModel):
             dict: dict without pairs with a value of None.
         """
         d = super().model_dump(*args, **kwargs)
-        d = {k: v for k, v in d.items() if v}
+        d = {k: v for k, v in d.items() if v is not None}
         return d

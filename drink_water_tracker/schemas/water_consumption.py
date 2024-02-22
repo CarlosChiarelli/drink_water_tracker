@@ -1,8 +1,6 @@
 from datetime import date
 
 from drink_water_tracker.schemas.base import CustomBaseModel
-from drink_water_tracker.schemas.cup_size import CupSize
-from drink_water_tracker.schemas.user import User
 
 
 class WaterConsumption(CustomBaseModel):
@@ -15,7 +13,11 @@ class WaterConsumptionInput(CustomBaseModel):
     water_consumption: WaterConsumption
 
 
-class WaterConsumptionOutput(WaterConsumption):
-    id: int
-    user: User
-    cup_size: CupSize
+class WaterConsumptionOutput(CustomBaseModel):
+    consumption_date: date
+    day_goal_ml: float
+    remaining_goal_ml: float
+    consumed_goal_ml: float
+    consumed_goal_percentage: float
+    total_consumption_ml: float
+    goal_reached: bool
