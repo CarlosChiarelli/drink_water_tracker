@@ -75,3 +75,26 @@ def test_list_water_consumption_route(water_consumption_on_db):
             "amount_ml": water_consumption_on_db[0].cup_size.amount_ml,
         },
     }
+
+
+def test_filter_water_consumption_by_username_and_date_route(water_consumption_on_db):
+    response = client.get("/water-consumption/list?username=Carlos&drinkdate=2024-02-20")
+
+    assert response.status_code == status.HTTP_200_OK
+
+    data = response.json()
+
+    assert len(data) == 4
+    assert all(item["user"]["name"] == "Carlos" for item in data)
+    assert all(item["drink_date"] == "2024-02-20" for item in data)
+
+
+def test_filter_water_consumption_by_username(water_consumption_on_db):
+    response = client.get("/water-consumption/list?username=Carlos")
+
+    assert response.status_code == status.HTTP_200_OK
+
+    data = response.json()
+
+    assert len(data) == 5
+    assert all(item["user"]["name"] == "Carlos" for item in data)
