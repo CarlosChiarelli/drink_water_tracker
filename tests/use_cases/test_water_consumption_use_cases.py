@@ -1,3 +1,5 @@
+from datetime import date
+
 import pytest
 from fastapi.exceptions import HTTPException
 
@@ -74,3 +76,32 @@ def test_list_water_consumption(db_session, water_consumption_on_db):
         water_consumption[0].cup_size.amount_ml
         == water_consumption_on_db[0].cup_size.amount_ml
     )
+
+
+def test_filter_water_consumption_by_username_and_date(
+    db_session, water_consumption_on_db
+):
+    uc = WaterConsumptionUseCases(db_session=db_session)
+    water_consumption = uc.list_water_consumption(
+        user_name="Carlos", drink_date="2024-02-20"
+    )
+
+    for wtcmp_on_db in water_consumption_on_db:
+        db_session.refresh(wtcmp_on_db)
+
+    assert len(water_consumption) == 4
+    assert type(water_consumption[0]) is WaterConsumptionOutput
+    assert all(item.user.name == "Carlos" for item in water_consumption)
+    assert all(item.drink_date == date(2024, 2, 20) for item in water_consumption)
+
+
+def test_filter_water_consumption_by_username(db_session, water_consumption_on_db):
+    uc = WaterConsumptionUseCases(db_session=db_session)
+    water_consumption = uc.list_water_consumption(user_name="Carlos")
+
+    for wtcmp_on_db in water_consumption_on_db:
+        db_session.refresh(wtcmp_on_db)
+
+    assert len(water_consumption) == 5
+    assert type(water_consumption[0]) is WaterConsumptionOutput
+    assert all(item.user.name == "Carlos" for item in water_consumption)
