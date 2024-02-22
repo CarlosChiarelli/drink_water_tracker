@@ -27,6 +27,9 @@ ipython = "^8.21.0"
 pytest = "^8.0.0"
 pytest-cov = "^4.1.0"
 httpx = "^0.26.0"
+pytest-sugar = "^1.0.0"
+pytest-clarity = "^1.0.1"
+pytest-pretty = "^1.2.0"
 
 [build-system]
 requires = ["poetry-core"]
