@@ -1,17 +1,22 @@
 from datetime import date
-from typing import Optional
+from typing import List
 
 from fastapi import APIRouter, Depends, Response, status
 from sqlalchemy.orm import Session
 
 from drink_water_tracker.routes.deps import get_db_session
-from drink_water_tracker.schemas.water_consumption import WaterConsumptionInput
+from drink_water_tracker.schemas.water_consumption import (
+    WaterConsumptionInput,
+    WaterConsumptionOutput,
+)
 from drink_water_tracker.use_cases.water_consumption import WaterConsumptionUseCases
 
 router = APIRouter(prefix="/water-consumption", tags=["Water consumption"])
 
 
-@router.post("/add")
+@router.post(
+    "/add", status_code=status.HTTP_201_CREATED, description="Add new water consumption."
+)
 def add_water_consumption(
     water_consumption_input: WaterConsumptionInput,
     db_session: Session = Depends(get_db_session),
@@ -26,10 +31,14 @@ def add_water_consumption(
     return Response(status_code=status.HTTP_201_CREATED)
 
 
-@router.get("/list")
+@router.get(
+    "/list",
+    response_model=List[WaterConsumptionOutput],
+    description="List water consumption.",
+)
 def list_water_consumption(
-    username: Optional[str] = None,
-    drinkdate: Optional[date] = None,
+    username: str = "",
+    drinkdate: date = date.today(),
     db_session: Session = Depends(get_db_session),
 ):
     uc = WaterConsumptionUseCases(db_session=db_session)

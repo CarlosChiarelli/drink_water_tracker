@@ -58,9 +58,13 @@ poetry run uvicorn drink_water_tracker.main:app
 ```bash
 cd drink_water_tracker/
 
-alembic init migrations
+# under development
+# alembic init migrations
 
-alembic revision --autogenerate -m "add user table"
+# under development
+# alembic revision --autogenerate -m "add user table"
+
+# first run
 alembic upgrade head
 ```
 
