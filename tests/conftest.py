@@ -65,7 +65,7 @@ def cup_sizes_on_db(db_session):
 
 # maybe remove
 @pytest.fixture()
-def water_consumption_on_db(db_session, users_on_db, cup_sizes_on_db):
+def water_consumption_multiple_users_on_db(db_session, users_on_db, cup_sizes_on_db):
     today = date.today().strftime("%Y-%m-%d")
     yesterday = (date.today() - timedelta(days=1)).strftime("%Y-%m-%d")
     carlos = users_on_db[0]
@@ -116,16 +116,66 @@ def water_consumption_on_db(db_session, users_on_db, cup_sizes_on_db):
             cup_size_id=medium_cup.id,
         ),
     ]
-    for wtcmp in water_consumption:
-        db_session.add(wtcmp)
+    for wc in water_consumption:
+        db_session.add(wc)
     db_session.commit()
 
     # update the ID in the object
-    for wtcmp in water_consumption:
-        db_session.refresh(wtcmp)
+    for wc in water_consumption:
+        db_session.refresh(wc)
 
     yield water_consumption
 
-    for wtcmp in water_consumption:
-        db_session.delete(wtcmp)
+    for wc in water_consumption:
+        db_session.delete(wc)
+    db_session.commit()
+
+
+@pytest.fixture()
+def water_consumption_one_user_on_db(db_session, users_on_db, cup_sizes_on_db):
+    today = date.today().strftime("%Y-%m-%d")
+    yesterday = (date.today() - timedelta(days=1)).strftime("%Y-%m-%d")
+    carlos = users_on_db[0]
+    medium_cup = cup_sizes_on_db[1]
+    large_bottle = cup_sizes_on_db[3]
+
+    water_consumption = [
+        WaterConsumptionModel(
+            drink_date=yesterday,
+            user_id=carlos.id,
+            cup_size_id=large_bottle.id,
+        ),
+        WaterConsumptionModel(
+            drink_date=yesterday,
+            user_id=carlos.id,
+            cup_size_id=large_bottle.id,
+        ),
+        WaterConsumptionModel(
+            drink_date=yesterday,
+            user_id=carlos.id,
+            cup_size_id=large_bottle.id,
+        ),
+        WaterConsumptionModel(
+            drink_date=yesterday,
+            user_id=carlos.id,
+            cup_size_id=large_bottle.id,
+        ),
+        WaterConsumptionModel(
+            drink_date=today,
+            user_id=carlos.id,
+            cup_size_id=medium_cup.id,
+        )
+    ]
+    for wc in water_consumption:
+        db_session.add(wc)
+    db_session.commit()
+
+    # update the ID in the object
+    for wc in water_consumption:
+        db_session.refresh(wc)
+
+    yield water_consumption
+
+    for wc in water_consumption:
+        db_session.delete(wc)
     db_session.commit()

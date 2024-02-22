@@ -17,7 +17,6 @@
     "workbench.startupEditor": "newUntitledFile",
     "workbench.colorTheme": "Dracula",
     "workbench.iconTheme": "material-icon-theme",
-    "debug.console.fontFamily": "JetBrains Mono",
     "debug.console.fontSize": 13,
     "editor.fontFamily": "'JetBrains Mono', 'Fira Code Retina', Consolas, monospace",
     "editor.fontLigatures": false,

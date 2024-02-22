@@ -12,11 +12,13 @@ from drink_water_tracker.schemas.water_consumption import (
     WaterConsumption,
     WaterConsumptionOutput,
 )
+from drink_water_tracker.services.water_consumption import WaterConsumptionService
 
 
 class WaterConsumptionUseCases:
     def __init__(self, db_session: Session) -> None:
         self.db_session = db_session
+        self.service = WaterConsumptionService()
 
     def add_water_consumption(
         self, water_consumption: WaterConsumption, user_id: int, cup_size_id: int
@@ -41,29 +43,32 @@ class WaterConsumptionUseCases:
         self.db_session.commit()
 
     def list_water_consumption(
-        self, user_name: Optional[str] = None, drink_date: Optional[date] = None
+        self, user_name: str = "", drink_date: Optional[date] = None
     ):
-        query = self.db_session.query(WaterConsumptionModel)
+        query = (
+            self.db_session.query(WaterConsumptionModel)
+            .join(WaterConsumptionModel.user)
+            .filter(UserModel.name == user_name)
+        )
 
-        if user_name:
-            query = query.join(WaterConsumptionModel.user).filter(
-                UserModel.name == user_name
-            )
         if drink_date:
             query = query.filter(WaterConsumptionModel.drink_date == drink_date)
 
         water_consumption_on_db = query.all()
-        water_consumption = [
-            self._serialize_water_consumption(wtcmp) for wtcmp in water_consumption_on_db
-        ]
+
+        if not water_consumption_on_db:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=(
+                    f"No user was found with name {user_name} "
+                    f"and date {drink_date if drink_date else ''}"
+                ),
+            )
+
+        wc_goals = self.service.calculate_user_goals(
+            water_consumption_on_db=water_consumption_on_db
+        )
+
+        water_consumption = [WaterConsumptionOutput(**wcg) for wcg in wc_goals]  # type: ignore
 
         return water_consumption
-
-    def _serialize_water_consumption(
-        self, water_consumption_on_db: WaterConsumptionModel
-    ):
-        water_consumption_dict = water_consumption_on_db.__dict__
-        water_consumption_dict["user"] = water_consumption_on_db.user.__dict__
-        water_consumption_dict["cup_size"] = water_consumption_on_db.cup_size.__dict__
-
-        return WaterConsumptionOutput(**water_consumption_dict)

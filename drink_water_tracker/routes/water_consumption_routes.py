@@ -47,3 +47,17 @@ def list_water_consumption(
     )
 
     return water_consumption
+
+
+@router.get(
+    "/list/all",
+    response_model=List[WaterConsumptionOutput],
+    description="List user's water consumption history.",
+)
+def list_all_water_consumption(
+    username: str = "", db_session: Session = Depends(get_db_session)
+):
+    uc = WaterConsumptionUseCases(db_session=db_session)
+    water_consumption = uc.list_water_consumption(user_name=username)
+
+    return water_consumption
