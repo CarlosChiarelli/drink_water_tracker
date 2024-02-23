@@ -1,6 +1,9 @@
-from datetime import date
+from datetime import date, timedelta
 
 from drink_water_tracker.services.water_consumption import WaterConsumptionService
+
+today = date.today()
+yesterday = date.today() - timedelta(days=1)
 
 
 def test_water_consumption_goal_calculation_service(water_consumption_one_user_on_db):
@@ -10,7 +13,7 @@ def test_water_consumption_goal_calculation_service(water_consumption_one_user_o
     )
 
     assert goals[0] == {
-        "consumption_date": date(2024, 2, 21),
+        "consumption_date": yesterday,
         "day_goal_ml": 2450,
         "remaining_goal_ml": 0,
         "consumed_goal_ml": 2450,
@@ -19,7 +22,7 @@ def test_water_consumption_goal_calculation_service(water_consumption_one_user_o
         "goal_reached": True,
     }
     assert goals[1] == {
-        "consumption_date": date(2024, 2, 22),
+        "consumption_date": today,
         "day_goal_ml": 2450,
         "remaining_goal_ml": 2100,
         "consumed_goal_ml": 350,
