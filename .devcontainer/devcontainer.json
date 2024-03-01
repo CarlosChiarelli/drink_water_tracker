@@ -43,6 +43,8 @@
                 "ms-python.black-formatter",
                 "ms-python.flake8",
                 "ms-python.isort",
+                "cstrap.python-snippets",
+                "damildrizzy.fastapi-snippets",
                 "esbenp.prettier-vscode",
                 "MS-CEINTL.vscode-language-pack-pt-BR",
                 "formulahendry.code-runner",
